@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,14 +20,15 @@ namespace Tictactoe
 		private GameState _gameState;
 		private ChessState _chessState;
 
-		private int _stepIdx;
-		private readonly int MAX_STEP = 9;
+		private byte _stepIdx;
+		private readonly byte MAX_STEP = 9;
 
 		private void OnEnable()
 		{
 			Button[] gridList = gridCont.GetComponentsInChildren<Button>();
 			foreach (var grid in gridList)
 			{
+				grid.enabled = true;
 				grid.onClick.AddListener(() => GridHandler(grid.name));
 			}
 
@@ -41,7 +43,7 @@ namespace Tictactoe
 
 			_gameState = GameState.Playing;
 			_chessState = ChessState.Player;
-			
+
 			_stepIdx = 0;
 		}
 
@@ -59,25 +61,32 @@ namespace Tictactoe
 
 		private void GridHandler(string gridName)
 		{
-			if (_gameState == GameState.Finish)
+			if (_gameState != GameState.Playing)
+				return;
+			if (_chessState != ChessState.Player)
 				return;
 
-			Image chess;
 			string chessName = gridName.Replace("Grid", "Chess");
+			DoChess(chessName);
+		}
+
+		private async void DoChess(string chessName)
+		{
+			Image chess;
 			_chessDict.TryGetValue(chessName, out chess);
 
 			if (chess == null)
 				return;
 
-			ChessState curState = _chessState;
+			ChessState lastState = _chessState;
 
-			if (curState == ChessState.Player)
+			if (lastState == ChessState.Player)
 			{
 				chess.enabled = true;
 				chess.sprite = playerChessRes;
 				_chessState = ChessState.Robot;
 			}
-			else if (curState == ChessState.Robot)
+			else if (lastState == ChessState.Robot)
 			{
 				chess.enabled = true;
 				chess.sprite = robotChessRes;
@@ -85,28 +94,65 @@ namespace Tictactoe
 			}
 			else
 			{
-				Debug.LogError("错误的棋子状态: " + curState);
+				Debug.LogError("错误的棋子状态: " + lastState);
 				return;
 			}
 
-			_chessStateDict[chessName] = curState;
+			_chessStateDict[chessName] = lastState;
 
-			if (CheckLinkLine(curState))
+			if (CheckLinkLine(lastState))
 			{
-				_gameState = GameState.Finish;
-
-				var result = curState == ChessState.Player ? GameResult.Win : GameResult.Lose;
-				PanelMgr.Inst().OpenResultPanel(result);
+				var result = lastState == ChessState.Player ? GameResult.Win : GameResult.Lose;
+				FinishChess(result);
 				return;
 			}
 
 			_stepIdx++;
 			if (_stepIdx >= MAX_STEP)
 			{
-				_gameState = GameState.Finish;
-
-				PanelMgr.Inst().OpenResultPanel(GameResult.Peace);
+				FinishChess(GameResult.Peace);
+				return;
 			}
+
+			if (_chessState == ChessState.Robot)
+			{
+				await Task.Delay(500);
+				DoChess(CalRobotChessName());
+			}
+		}
+
+		private string CalRobotChessName()
+		{
+			List<string> list = new List<string>();
+
+			foreach (var val in _chessStateDict)
+			{
+				if (val.Value == ChessState.None)
+				{
+					list.Add(val.Key);
+				}
+			}
+
+			if (list.Count > 0)
+			{
+				return list[Random.Range(0, list.Count)];
+			}
+
+			return "";
+		}
+
+		private async void FinishChess(GameResult result)
+		{
+			_gameState = GameState.Finish;
+
+			Button[] gridList = gridCont.GetComponentsInChildren<Button>();
+			foreach (var grid in gridList)
+			{
+				grid.enabled = false;
+			}
+
+			await Task.Delay(500);
+			PanelMgr.Inst().OpenResultPanel(result);
 		}
 
 		private bool CheckLinkLine(ChessState state)

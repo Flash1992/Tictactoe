@@ -7,7 +7,7 @@
 		Finish = 2, // 已结束
 	}
 
-	// 棋子归属状态
+	// 下棋状态
 	public enum ChessState
 	{
 		None = 0, // 无
