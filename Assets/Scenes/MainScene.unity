@@ -575,6 +575,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ResultPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 4355278829088479930, guid: 78b092ccaeb1b1a4e92745c0a745f328,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4355278829088479931, guid: 78b092ccaeb1b1a4e92745c0a745f328,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1357,6 +1362,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StartPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 9143562490263115294, guid: 952d7f3ef27c2f84394fcc9678d59b22,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9143562490263115295, guid: 952d7f3ef27c2f84394fcc9678d59b22,
         type: 3}

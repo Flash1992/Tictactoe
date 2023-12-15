@@ -32,10 +32,10 @@
 			OpenPanel(_entryPoint.gamePanel);
 		}
 
-		public void OpenResultPanel(bool isWin)
+		public void OpenResultPanel(GameResult result)
 		{
 			OpenPanel(_entryPoint.resultPanel);
-			_entryPoint.resultPanel.SetResult(isWin);
+			_entryPoint.resultPanel.SetResult(result);
 		}
 
 		private void OpenPanel(BasePanel panel)

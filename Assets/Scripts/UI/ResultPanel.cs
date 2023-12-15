@@ -33,12 +33,20 @@ namespace Tictactoe
 			PanelMgr.Inst().OpenStartPanel();
 		}
 
-		public void SetResult(bool isWin)
+		public void SetResult(GameResult result)
 		{
-			if (isWin)
-				resultTxt.text = "You Win!";
-			else
-				resultTxt.text = "You Lose...";
-		}	
+			switch (result)
+			{
+				case GameResult.Win:
+					resultTxt.text = "You Win!";
+					break;
+				case GameResult.Lose:
+					resultTxt.text = "You Lose...";
+					break;
+				default:
+					resultTxt.text = "居然打平了";
+					break;
+			}
+		}
 	}
 }

@@ -5,19 +5,6 @@ using UnityEngine.UI;
 
 namespace Tictactoe
 {
-	public enum GameState
-	{
-		Playing = 1,
-		Finish = 2,
-	}
-
-	public enum ChessState
-	{
-		None = 0,
-		Player = 1,
-		Robot = 2,
-	}
-
 	public class GamePanel : BasePanel
 	{
 		public GridLayoutGroup gridCont;
@@ -31,6 +18,9 @@ namespace Tictactoe
 
 		private GameState _gameState;
 		private ChessState _chessState;
+
+		private int _stepIdx;
+		private readonly int MAX_STEP = 9;
 
 		private void OnEnable()
 		{
@@ -51,6 +41,8 @@ namespace Tictactoe
 
 			_gameState = GameState.Playing;
 			_chessState = ChessState.Player;
+			
+			_stepIdx = 0;
 		}
 
 		private void OnDisable()
@@ -103,8 +95,17 @@ namespace Tictactoe
 			{
 				_gameState = GameState.Finish;
 
-				bool isWin = curState == ChessState.Player;
-				PanelMgr.Inst().OpenResultPanel(isWin);
+				var result = curState == ChessState.Player ? GameResult.Win : GameResult.Lose;
+				PanelMgr.Inst().OpenResultPanel(result);
+				return;
+			}
+
+			_stepIdx++;
+			if (_stepIdx >= MAX_STEP)
+			{
+				_gameState = GameState.Finish;
+
+				PanelMgr.Inst().OpenResultPanel(GameResult.Peace);
 			}
 		}
 
